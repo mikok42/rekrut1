@@ -10,6 +10,8 @@ import UIKit
 class ViewController: UIViewController {
     @IBOutlet var labelOutlet: UILabel!
     @IBOutlet var imageOutlet: UIImageView!
+    @IBOutlet var objectTitle: UILabel!
+    @IBOutlet var ModificationDate: UILabel!
     
     var dataFromUrl: [DataModel] = []
     let url: String = "https://recruitment-task.futuremind.dev/recruitment-task"
@@ -48,6 +50,8 @@ class ViewController: UIViewController {
     
     func assignElements() {
         labelOutlet.text = dataFromUrl[0].description
+        objectTitle.text = dataFromUrl[0].title
+        ModificationDate.text = String(dataFromUrl[0].modificationDate)
         downloadImage(url: dataFromUrl[0].image_url)
     }
     
