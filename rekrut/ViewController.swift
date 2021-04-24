@@ -8,12 +8,54 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
+    @IBOutlet var labelOutlet: UILabel!
+    @IBOutlet var imageOutlet: UIImageView!
+    
+    var dataFromUrl: [DataModel] = []
+    let url: String = "https://recruitment-task.futuremind.dev/recruitment-task"
+    
+    let parser = JSONParser.sharedParser
+    
+    func getData(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
-
-
+    
+    func downloadImage(url: URL) {
+        getData(url: url) { (data, response, error) in
+            guard let tempData = data else { return }
+            DispatchQueue.main.async() { [weak self] in
+                self?.imageOutlet.image = UIImage(data: tempData)
+                
+            }
+        }
+    }
+    
+    fileprivate func fileDL() {
+        super.viewDidLoad()
+        parser.readFromURL(fromURL: url) { [self] (data) in
+            do {
+                guard let data = data else { return }
+                let tempData: [DataModel] = try parser.parse(jsonData: data)
+                dataFromUrl = tempData
+                DispatchQueue.main.async {
+                    assignElements()
+                }
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func assignElements() {
+        labelOutlet.text = dataFromUrl[0].description
+        downloadImage(url: dataFromUrl[0].image_url)
+    }
+    
+    override func viewDidLoad() {
+        fileDL()
+    }
 }
+
+
+
 
